@@ -58,11 +58,13 @@ import javax.swing.*;
 
 
 public class ManageRoom extends javax.swing.JFrame {
-    
+    |
+    |
         Connection getCon=null;
-
-  
-   
+    |
+    |
+    |
+    | 
   
     public ManageRoom() {
         initComponents();
