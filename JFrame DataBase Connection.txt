@@ -1,0 +1,148 @@
+
+/////////////////////////CONNECTION CLASS
+
+
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package hallseat;
+import java.sql.*;
+import javax.swing.JOptionPane;
+
+/**
+ *
+ * @author Aristo_NPC
+ */
+public class ConnectionProvider {
+    
+
+    public static Connection getCon() {
+        Connection getCon=null;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+              getCon=DriverManager.getConnection("jdbc:mysql://localhost:3306/hall","root","");
+            //return con;
+            System.out.println("Connceted");
+        }
+        catch(Exception e)
+        {
+        //return null;
+            JOptionPane.showMessageDialog(null,e);
+         
+        }
+        return getCon;
+///localhost:3306
+/// ?zeroDateTimeBehavior=CONVERT_TO_NULL
+    }
+
+}
+
+
+import java.awt.event.KeyEvent;
+import static java.lang.Class.forName;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import java.sql.*;
+import javax.swing.table.DefaultTableModel;
+//import hallseat.ConnectionProvider;
+import java.sql.PreparedStatement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.awt.*;
+import java.util.Vector;
+import javax.swing.*;
+
+
+/////////////CONNECTION CODE
+
+
+public class ManageRoom extends javax.swing.JFrame {
+    
+        Connection getCon=null;
+
+  
+   
+  
+    public ManageRoom() {
+        initComponents();
+        getCon= ConnectionProvider.getCon();
+        //Connect();
+    }
+    PreparedStatement ps;
+    private void table_update()
+    {
+       
+            int c;
+            try {
+               
+                 ps = getCon.prepareStatement("SELECT * FROM `seat`");
+                 ResultSet rs = ps.executeQuery();
+                 
+                 ResultSetMetaData rsd = rs.getMetaData();
+                 c = rsd.getColumnCount();
+                 
+                 DefaultTableModel d = (DefaultTableModel)jTable1.getModel();
+                 d.setRowCount(0);
+                                 
+                 while(rs.next())
+                 {
+                     Vector v2 = new Vector(); 
+                     for(int i=1; i<=c; i++)
+                     {
+                         v2.add(rs.getString("Floor"));
+                         v2.add(rs.getString("Room"));
+                         v2.add(rs.getString("Bed"));
+                         v2.add(rs.getString("Active"));
+                         v2.add(rs.getString("Status"));
+                        
+                     }             
+                     d.addRow(v2);
+                     
+                 }
+        } catch (SQLException ex) {
+            Logger.getLogger(ManageRoom.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+
+////////////////////////BUTTON PERFORMANCE
+
+ String FLOORNUMBER = jTextField1.getText();
+        String ROOMNUMBER = jTextField2.getText();
+        String BEDNumber = jTextField3.getText();
+        String activate;
+        String STATUS = "Not Booked";
+        if (jCheckBox1.isSelected()) {
+            activate = "YES";
+        } else {
+            activate = "NO";
+        }
+        try {
+           // Connection Con = ConnectionProvider.getCon();
+             ps = getCon.prepareStatement("INSERT INTO `seat`(`Floor`, `Room`, `Bed`, `Active`, `Status`) VALUES (?,?,?,?,?)");
+            ps.setString(1, FLOORNUMBER);
+            ps.setString(2, ROOMNUMBER);
+            ps.setString(3, BEDNumber);
+            ps.setString(4, activate);
+           ps.setString(5, STATUS);
+            ps.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Successfully Update");
+           // tableDetails();
+           table_update();
+            jTextField1.setText("");
+             jTextField2.setText("");
+              jTextField3.setText("");
+              jCheckBox1.setText("");
+      
+            table_update();
+            jTextField1.requestFocus();
+           
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+
+
+
+
+
